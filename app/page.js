@@ -40,7 +40,10 @@ export default function Home() {
                 </CardActionArea>
                 <CardActions>
                   <Typography>${product.price}</Typography>
-                  <Button size="small" color="primary">
+                  <Button
+                    size="small"
+                    sx={{ color: '#7b1fa2', fontWeight: '700' }}
+                  >
                     Add to cart
                   </Button>
                 </CardActions>

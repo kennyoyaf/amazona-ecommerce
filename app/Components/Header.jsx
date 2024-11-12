@@ -31,26 +31,19 @@ export default function Header() {
       }}
     >
       <Toolbar>
-        <NextLink href="/" passHref>
-          <Link>
-            {' '}
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: 'bold', fontSize: '1.5rem' }}
-            >
-              amazona
-            </Typography>
-          </Link>
-        </NextLink>
+        <Link href="/">
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: 'bold', fontSize: '1.5rem' }}
+          >
+            amazona
+          </Typography>
+        </Link>
 
         <Box sx={{ flexGrow: 1 }}></Box>
         <div>
-          <NextLink href="/cart" passHref>
-            <Link>Cart</Link>
-          </NextLink>
-          <NextLink href="/login" passHref>
-            <Link>Login</Link>
-          </NextLink>
+          <Link href="/cart">Cart</Link>
+          <Link href="/login">Login</Link>
         </div>
       </Toolbar>
     </AppBar>

@@ -38,7 +38,7 @@ const signJwt = id => {
 
 const createAccessToken = id => {
   const accessToken = jwt.sign({ id }, TOKEN_SECRET, {
-    expiresIn: 60 * 30
+    expiresIn: 60 * 60 * 24
   });
   return { accessToken };
 };

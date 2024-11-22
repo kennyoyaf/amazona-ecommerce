@@ -1,21 +1,38 @@
-const { checkJwt } = require('../Services/userService');
+const {
+  checkJwt,
+  getUserByIDWithOutPassword
+} = require('../Services/userService');
 const { responseHandler } = require('../utils/responseHandler');
 
 // Middleware to validate user jwt token
 const verifyToken = async (req, res, next) => {
   const bearerHeader = req.headers.authorization;
 
+  console.log({ bearerHeader });
+
   if (bearerHeader !== undefined) {
     const token = bearerHeader.split(' ')[1];
+
+    console.log({ token });
     const check = await checkJwt(token);
 
+    console.log({ check });
+
     const { id, exp, err } = check;
+
+    console.log({ id });
+
     if (err) {
       return responseHandler(res, err, 401, false, '');
     }
 
     if (id && exp < Date.now()) {
       req.id = id;
+
+      const theUser = await getUserByIDWithOutPassword(id);
+
+      if (!theUser)
+        return responseHandler(res, 'User is not available', 401, false, '');
 
       next();
       return;

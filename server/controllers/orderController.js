@@ -13,13 +13,23 @@ const createOrder = async (req, res) => {
       return responseHandler(res, validationErrors, 400, false, '');
     }
 
+    console.log(req.body);
+    console.log(req.id);
+
+    const { orderItems, ...item } = req.body;
+
+    console.log({ orderItems, item });
+
     // Get the buyer's ID from req.user
-    const buyerId = req.user.id;
+    const buyerId = req.id;
 
     // Attach the buyer's ID to the order
-    const orderData = { ...req.body, user: buyerId };
+    const orderData = { ...item, user: buyerId };
 
     const savedOrder = await saveOrder(orderData);
+
+    if (!saveOrder[0]) return responseHandler(res, savedOrder[1], false, '');
+
     return savedOrder[0]
       ? responseHandler(
           res,

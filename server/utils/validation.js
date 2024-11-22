@@ -103,10 +103,6 @@ const adminLoginValidation = async field => {
 
 const orderValidation = async field => {
   const schema = Joi.object({
-    user: Joi.string().required().messages({
-      'string.base': 'User ID must be a valid string.',
-      'any.required': 'User ID is required.'
-    }),
     orderItems: Joi.array()
       .items(
         Joi.object({

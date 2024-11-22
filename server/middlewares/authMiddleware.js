@@ -1,3 +1,4 @@
+const { getOrderById } = require('../Services/orderSchemaService');
 const {
   checkJwt,
   getUserByIDWithOutPassword
@@ -31,8 +32,14 @@ const verifyToken = async (req, res, next) => {
 
       const theUser = await getUserByIDWithOutPassword(id);
 
+      console.log({ theUser });
+
       if (!theUser)
         return responseHandler(res, 'User is not available', 401, false, '');
+
+      const theOrder = await getOrderById(id);
+
+      console.log({ theOrder });
 
       next();
       return;

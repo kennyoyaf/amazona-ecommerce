@@ -7,11 +7,10 @@ import {
   Box,
   Button,
   Card,
+  CircularProgress,
   Grid,
   List,
   ListItem,
-  MenuItem,
-  Select,
   Table,
   TableBody,
   TableCell,
@@ -26,39 +25,104 @@ import axios from 'axios';
 import TransitionLink from '@/utils/TransitionLink';
 import { useRouter } from 'next/navigation';
 import CheckoutWizard from '../Components/checkoutWizard';
-import { closeSnackbar, useSnackbar } from 'notistack';
+import { useSnackbar } from 'notistack';
+import Cookies from 'js-cookie';
 
 const Placeorder = () => {
   const router = useRouter();
   const { closeSnackbar, enqueueSnackbar } = useSnackbar();
   const { state, dispatch } = useContext(Store);
-  const { userInfo } = state;
   const {
+    userInfo,
     cart: { cartItems, shippingAddress, paymentMethod }
   } = state;
 
   const [isMounted, setIsMounted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
     if (!paymentMethod) {
       router.push('/payment');
     }
-  }, []);
-
+    if (cartItems.length === 0) {
+      router.push('/cart');
+    }
+  }, [cartItems.length, paymentMethod, router]);
   if (!isMounted) {
     return null;
   }
 
-  const placeOrderHandler = () => {
+  const placeOrderHandler = async () => {
     closeSnackbar();
+    try {
+      setLoading(true);
+      const round2 = num => Math.round(num * 100 + Number.EPSILON) / 100; // 123.456 => 123.46
+      const itemsPrice = round2(
+        cartItems.reduce((a, c) => a + c.price * c.quantity, 0)
+      );
+      const shippingPrice = itemsPrice > 200 ? 10 : 25;
+      const taxPrice = round2(itemsPrice * 0.15);
+      const totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
+
+      const payload = {
+        orderItems: cartItems.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          image: item.image,
+          price: item.price
+        })),
+        shippingAddress,
+        paymentMethod,
+        itemsPrice,
+        shippingPrice,
+        taxPrice,
+        totalPrice,
+        isPaid: false,
+        isDelivered: false
+      };
+      console.log('Payload to send:', payload);
+      console.log('Authorization Header:', userInfo?.accessToken);
+
+      const response = await fetch(
+        'http://localhost:4000/product/order/details',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${userInfo.accessToken}`
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+
+      dispatch({ type: 'CART_CLEAR' });
+      Cookies.remove('cartItems');
+      setLoading(false);
+      router.push(`/order/${data._id}`);
+      console.log(data);
+    } catch (error) {
+      setLoading(false);
+      if (error.response?.status === 401) {
+        enqueueSnackbar('Unauthorized: Please log in again.', {
+          variant: 'error'
+        });
+        router.push('/login');
+      } else {
+        enqueueSnackbar('Failed to place order. Try again.', {
+          variant: 'error'
+        });
+      }
+    }
   };
 
   const round2 = num => Math.round(num * 100 + Number.EPSILON) / 100; // 123.456 => 123.46
   const itemsPrice = round2(
     cartItems.reduce((a, c) => a + c.price * c.quantity, 0)
   );
-  const shippingPrice = itemsPrice > 200 ? 0 : 15;
+  const shippingPrice = itemsPrice > 2200 ? 0 : 15;
   const taxPrice = round2(itemsPrice * 0.15);
   const totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
 
@@ -79,9 +143,9 @@ const Placeorder = () => {
                   </Typography>
                 </ListItem>
                 <ListItem>
-                  {shippingAddress.fullName}, {shippingAddress.address},{' '}
-                  {shippingAddress.city}, {shippingAddress.postalCode},{' '}
-                  {shippingAddress.country}
+                  {shippingAddress?.fullName}, {shippingAddress?.address},{' '}
+                  {shippingAddress?.city}, {shippingAddress?.postalCode},{' '}
+                  {shippingAddress?.country}
                 </ListItem>
               </List>
             </Card>
@@ -211,6 +275,11 @@ const Placeorder = () => {
                     Place Order
                   </Button>
                 </ListItem>
+                {loading && (
+                  <ListItem>
+                    <CircularProgress />
+                  </ListItem>
+                )}
               </List>
             </Card>
           </Grid>

@@ -13,13 +13,15 @@ const roboto = Roboto({
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <SnackbarProvider
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
+      <body className={roboto.className}>
         <StoreProvider>
-          <body className={roboto.className}>{children}</body>
+          <SnackbarProvider
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            {children}
+          </SnackbarProvider>
         </StoreProvider>
-      </SnackbarProvider>
+      </body>
     </html>
   );
 }

@@ -33,10 +33,6 @@ const adminSignup = async (req, res) => {
     }
 
     if (checkMail) {
-      return responseHandler(res, 'Admin already exist', 400, false, '');
-    }
-
-    if (checkMail) {
       return responseHandler(res, 'Email already exists', 400, false, '');
     }
 

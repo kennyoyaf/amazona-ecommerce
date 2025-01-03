@@ -20,6 +20,35 @@ const validateProduct = async body => {
   }
 };
 
+const validateOrderItems = async field => {
+  const schema = Joi.object({
+    name: Joi.string().required().messages({
+      'string.base': 'Item name must be a string.',
+      'any.required': 'Item name is required.'
+    }),
+    quantity: Joi.number().integer().positive().required().messages({
+      'number.base': 'Item quantity must be a number.',
+      'number.positive': 'Item quantity must be greater than zero.',
+      'any.required': 'Item quantity is required.'
+    }),
+    image: Joi.string().uri().required().messages({
+      'string.base': 'Item image must be a string.',
+      'string.uri': 'Item image must be a valid URL.',
+      'any.required': 'Item image is required.'
+    }),
+    price: Joi.number().positive().required().messages({
+      'number.base': 'Item price must be a number.',
+      'number.positive': 'Item price must be greater than zero.',
+      'any.required': 'Item price is required.'
+    })
+  });
+  try {
+    return await schema.validateAsync(field, { abortEarly: false });
+  } catch (err) {
+    return err;
+  }
+};
+
 const validateId = async field => {
   const schema = Joi.object({
     id: Joi.string().required().length(24)
@@ -209,5 +238,6 @@ module.exports = {
   adminSignupValidation,
   validateProduct,
   validateId,
+  validateOrderItems,
   orderValidation
 };

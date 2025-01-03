@@ -1,10 +1,10 @@
-const { saveOrder, getUserUsingId } = require('../Services/orderService');
+const { saveOrderItem } = require('../Services/orderItemService');
 const { responseHandler } = require('../utils/responseHandler');
-const { orderValidation } = require('../utils/validation');
+const { validateOrderItems } = require('../utils/validation');
 
-const createOrder = async (req, res) => {
+const createOrderItem = async (req, res) => {
   try {
-    const { details } = await orderValidation(req.body);
+    const { details } = await validateOrderItems(req.body);
 
     if (details) {
       const validationErrors = details.map(detail =>
@@ -13,22 +13,29 @@ const createOrder = async (req, res) => {
       return responseHandler(res, validationErrors, 400, false, '');
     }
 
-    const { ...item } = req.body;
+    console.log(req.body);
+    console.log(req.id);
+
+    const { orderItems, ...item } = req.body;
+
+    console.log({ orderItems, item });
 
     // Get the buyer's ID from req.user
-    const buyerId = req.id;
+    const orderId = req.id;
 
     // Attach the buyer's ID to the order
-    const orderData = { ...item, user: buyerId };
+    const orderData = { ...item, order: orderId };
 
-    const savedOrder = await saveOrder(orderData);
+    const savedOrder = await saveOrderItem(orderData);
+
+    console.log(savedOrder);
 
     if (!savedOrder[0]) return responseHandler(res, savedOrder[1], false, '');
 
     return savedOrder[0]
       ? responseHandler(
           res,
-          'Order created successfully',
+          'Order item created successfully',
           201,
           true,
           savedOrder[1]
@@ -39,4 +46,4 @@ const createOrder = async (req, res) => {
   }
 };
 
-module.exports = { createOrder };
+module.exports = { createOrderItem };

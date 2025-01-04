@@ -59,6 +59,8 @@ function reducer(state, action) {
           paymentMethod: action.payload
         }
       };
+    case 'CART_CLEAR':
+      return { ...state, cart: { ...state.cart, cartItems: [] } };
     case 'USER_LOGIN': {
       const { user, accessToken } = action.payload;
       const userInfo = { user, accessToken };
@@ -66,7 +68,11 @@ function reducer(state, action) {
       return { ...state, userInfo };
     }
     case 'USER_LOGOUT': {
-      return { ...state, userInfo: null, cart: { cartItems: [] } }; // Clear userInfo in state
+      return {
+        ...state,
+        userInfo: null,
+        cart: { cartItems: [], shippingAddress: {}, paymentMethod: '' }
+      }; // Clear userInfo in state
     }
     default:
       return state;

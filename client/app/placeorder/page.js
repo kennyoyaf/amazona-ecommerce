@@ -21,7 +21,6 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import Image from 'next/image';
-import axios from 'axios';
 import TransitionLink from '@/utils/TransitionLink';
 import { useRouter } from 'next/navigation';
 import CheckoutWizard from '../Components/checkoutWizard';
@@ -96,13 +95,10 @@ const Placeorder = () => {
         }
       );
       const data = await response.json();
-      console.log(data);
-
       dispatch({ type: 'CART_CLEAR' });
       Cookies.remove('cartItems');
       setLoading(false);
-      router.push(`/order/${data._id}`);
-      console.log(data);
+      router.push(`/order/${data.data.id}`);
     } catch (error) {
       setLoading(false);
       if (error.response?.status === 401) {
@@ -127,7 +123,7 @@ const Placeorder = () => {
   const totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
 
   return (
-    <Layout title="Shopping Cart">
+    <Layout title="Place Order">
       <Box sx={{ marginLeft: { md: '80px' } }}>
         <CheckoutWizard activeStep={3} />
         <Typography component="h1" variant="h1">

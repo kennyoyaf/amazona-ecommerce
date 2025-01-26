@@ -44,9 +44,9 @@ const Placeorder = () => {
     if (!paymentMethod) {
       router.push('/payment');
     }
-    if (cartItems.length === 0) {
-      router.push('/cart');
-    }
+    // if (cartItems.length === 0) {
+    //   router.push('/cart');
+    // }
   }, [cartItems.length, paymentMethod, router]);
   if (!isMounted) {
     return null;
@@ -80,8 +80,6 @@ const Placeorder = () => {
         isPaid: false,
         isDelivered: false
       };
-      console.log('Payload to send:', payload);
-      console.log('Authorization Header:', userInfo?.accessToken);
 
       const response = await fetch(
         'http://localhost:4000/product/order/details',
@@ -94,11 +92,17 @@ const Placeorder = () => {
           body: JSON.stringify(payload)
         }
       );
+
+      if (!response.ok) {
+        throw new Error('Failed to place order');
+      }
+
       const data = await response.json();
+      const newData = data.data;
+      router.push(`/order/${newData._id}`);
       dispatch({ type: 'CART_CLEAR' });
       Cookies.remove('cartItems');
       setLoading(false);
-      router.push(`/order/${data.data.id}`);
     } catch (error) {
       setLoading(false);
       if (error.response?.status === 401) {

@@ -1,6 +1,6 @@
-const { saveOrder, getUserUsingId } = require('../Services/orderService');
+const { saveOrder, getOrderById } = require('../Services/orderService');
 const { responseHandler } = require('../utils/responseHandler');
-const { orderValidation } = require('../utils/validation');
+const { orderValidation, validateId } = require('../utils/validation');
 
 const createOrder = async (req, res) => {
   try {
@@ -39,4 +39,24 @@ const createOrder = async (req, res) => {
   }
 };
 
-module.exports = { createOrder };
+const getOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+
+    const orderId = await getOrderById(id);
+    console.log(orderId);
+
+    if (!orderId) {
+      return responseHandler(res, 'order not found', 404, false, '');
+    }
+
+    return orderId
+      ? responseHandler(res, 'order retrieved successfully', 200, true, orderId)
+      : responseHandler(res, 'Error getting order', 400, false, '');
+  } catch (error) {
+    return responseHandler(res, error.message, 400, false, '');
+  }
+};
+
+module.exports = { createOrder, getOrder };

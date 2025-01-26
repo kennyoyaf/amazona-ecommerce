@@ -11,6 +11,4 @@ const saveOrderItem = async body => {
   }
 };
 
-const getOrderById = async id => await OrderItem.findById(id);
-
-module.exports = { saveOrderItem, getOrderById };
+module.exports = { saveOrderItem };

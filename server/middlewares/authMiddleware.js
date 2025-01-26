@@ -1,4 +1,4 @@
-const { getOrderById } = require('../Services/orderItemService');
+const { getOrderById } = require('../Services/orderService');
 const {
   checkJwt,
   getUserByIDWithOutPassword
@@ -27,8 +27,6 @@ const verifyToken = async (req, res, next) => {
 
       if (!theUser)
         return responseHandler(res, 'User is not available', 401, false, '');
-
-      const theOrder = await getOrderById(id);
 
       next();
       return;

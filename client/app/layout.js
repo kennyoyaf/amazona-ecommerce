@@ -11,12 +11,6 @@ const roboto = Roboto({
   weight: ['400', '500', '700']
 });
 
-const initialOptions = {
-  clientId: 'test',
-  currency: 'USD',
-  intent: 'capture'
-};
-
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
@@ -25,7 +19,7 @@ export default function RootLayout({ children }) {
           <SnackbarProvider
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           >
-            <PayPalScriptProvider deferLoading={true} options={initialOptions}>
+            <PayPalScriptProvider deferLoading={false}>
               {children}
             </PayPalScriptProvider>
           </SnackbarProvider>

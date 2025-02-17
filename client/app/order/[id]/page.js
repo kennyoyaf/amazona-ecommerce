@@ -54,12 +54,8 @@ const Order = () => {
   const { state } = useContext(Store);
   const { userInfo } = state;
   const [orderData, setOrderData] = useState([]);
-  console.log(orderData);
 
-  const [{ loading, error, order }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  const [{ loading, error }, dispatch] = useReducer(reducer, initialState);
 
   // const {
   //   orderItems = [],
@@ -81,9 +77,9 @@ const Order = () => {
         dispatch({ type: 'FETCH_REQUEST' });
 
         const response = await fetch(
-          `http://localhost:4000/product/create-order`,
+          `http://localhost:4000/product/order/${id}`,
           {
-            method: 'POST',
+            method: 'GET',
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${userInfo.accessToken}`
@@ -92,43 +88,54 @@ const Order = () => {
         );
 
         const data = await response.json();
+        console.log(data.data);
         setOrderData(data.data);
-        dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        dispatch({ type: 'FETCH_SUCCESS', payload: data.data });
       } catch (error) {
         setOrderData(null);
         dispatch({ type: 'FETCH_FAIL', payload: error.message });
       }
     };
-    // if (!order._id || (order._id && order._id !== id)) {
-    //   fetchOrder();
-    // } else {
-    //   const loadPaypalScript = async () => {
-    //     const { data } = await fetch(
-    //       'http://localhost:4000/product/create-order',
-    //       {
-    //         headers: {
-    //           Authorization: `Bearer ${userInfo.accessToken}`
-    //         }
-    //       }
-    //     );
-    //     paypalDispatch({
-    //       type: 'resetOptions',
-    //       value: {
-    //         'client-id': data,
-    //         currency: 'USD'
-    //       }
-    //     });
-    //     paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
-    //   };
-    //   loadPaypalScript();
-    // }
-  }, [id, userInfo, router]);
+    fetchOrder();
+
+    const loadPaypalScript = async () => {
+      const response = await fetch(
+        'http://localhost:4000/product/paypal-client-id',
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${userInfo.accessToken}`
+          }
+        }
+      );
+
+      const { clientId } = await response.json();
+      console.log(clientId);
+
+      if (clientId) {
+        paypalDispatch({
+          type: 'resetOptions',
+          value: {
+            'client-id': clientId,
+            currency: 'USD'
+          }
+        });
+
+        paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
+      }
+    };
+
+    if (orderData?._id && !orderData?.isPaid) {
+      loadPaypalScript();
+    }
+  }, [id, userInfo, router, paypalDispatch]);
 
   async function createOrder() {
     const response = await fetch('http://localhost:4000/product/create-order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
+        // Authorization: `Bearer ${userInfo.accessToken}`
       },
       body: JSON.stringify({
         amount: orderData.totalPrice.toFixed(2),
@@ -165,6 +172,7 @@ const Order = () => {
         );
 
         const captureData = await response.json();
+        console.log(captureData);
 
         dispatch({ type: 'PAY_SUCCESS', payload: captureData });
         enqueueSnackbar('Payment successful', { variant: 'success' });
@@ -339,17 +347,18 @@ const Order = () => {
                       </Grid>
                     </Grid>
                   </ListItem>
-                  {orderData.isPaid === false && (
+                  {!orderData.isPaid && (
                     <ListItem>
                       {isPending ? (
                         <CircularProgress />
                       ) : (
-                        <PayPalButtons
-                          createOrder={createOrder}
-                          onApprove={onApprove}
-                          onError={onError}
-                          style={{ layout: 'horizontal' }}
-                        />
+                        <div style={{ width: '100%' }}>
+                          <PayPalButtons
+                            createOrder={createOrder}
+                            onApprove={onApprove}
+                            style={{ layout: 'horizontal', width: '100%' }}
+                          />
+                        </div>
                       )}
                     </ListItem>
                   )}

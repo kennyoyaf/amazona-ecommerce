@@ -25,6 +25,13 @@ import { useParams, useRouter } from 'next/navigation';
 import CheckoutWizard from '../../Components/checkoutWizard';
 import { useSnackbar } from 'notistack';
 import Cookies from 'js-cookie';
+import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
+
+const initialState = {
+  loading: true,
+  order: {},
+  error: ''
+};
 
 function reducer(state, action) {
   switch (action.type) {
@@ -41,17 +48,18 @@ function reducer(state, action) {
 
 const Order = () => {
   const router = useRouter();
+  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
   const { closeSnackbar, enqueueSnackbar } = useSnackbar();
   const { id } = useParams();
   const { state } = useContext(Store);
   const { userInfo } = state;
   const [orderData, setOrderData] = useState([]);
+  console.log(orderData);
 
-  const [{ loading, error, order }, dispatch] = useReducer(reducer, {
-    loading: true,
-    order: {},
-    error: ''
-  });
+  const [{ loading, error, order }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
 
   // const {
   //   orderItems = [],
@@ -73,9 +81,9 @@ const Order = () => {
         dispatch({ type: 'FETCH_REQUEST' });
 
         const response = await fetch(
-          `http://localhost:4000/product/order/${id}`,
+          `http://localhost:4000/product/create-order`,
           {
-            method: 'GET',
+            method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${userInfo.accessToken}`
@@ -84,7 +92,6 @@ const Order = () => {
         );
 
         const data = await response.json();
-        console.log(data.data);
         setOrderData(data.data);
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (error) {
@@ -92,10 +99,81 @@ const Order = () => {
         dispatch({ type: 'FETCH_FAIL', payload: error.message });
       }
     };
-    if (!order._id || (order._id && order._id !== id)) {
-      fetchOrder();
-    }
-  }, [order._id, id, userInfo, router]);
+    // if (!order._id || (order._id && order._id !== id)) {
+    //   fetchOrder();
+    // } else {
+    //   const loadPaypalScript = async () => {
+    //     const { data } = await fetch(
+    //       'http://localhost:4000/product/create-order',
+    //       {
+    //         headers: {
+    //           Authorization: `Bearer ${userInfo.accessToken}`
+    //         }
+    //       }
+    //     );
+    //     paypalDispatch({
+    //       type: 'resetOptions',
+    //       value: {
+    //         'client-id': data,
+    //         currency: 'USD'
+    //       }
+    //     });
+    //     paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
+    //   };
+    //   loadPaypalScript();
+    // }
+  }, [id, userInfo, router]);
+
+  async function createOrder() {
+    const response = await fetch('http://localhost:4000/product/create-order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        amount: orderData.totalPrice.toFixed(2),
+        currency: 'USD',
+        complete: 'payment-success',
+        cancel: 'payment-cancelled',
+        items: orderData.orderItems.map(item => ({
+          name: item.name,
+          quantity: item.quantity.toString(),
+          price: item.price.toFixed(2),
+          image: item.image
+        }))
+      })
+    });
+    const order = await response.json();
+    console.log(order);
+    return order.orderID;
+  }
+
+  function onApprove(data, actions) {
+    return actions.order.capture().then(async function (details) {
+      try {
+        dispatch({ type: 'PAY_REQUEST' });
+
+        const response = await fetch(
+          `http://localhost:4000/product/capture-order/${data.orderID}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(details)
+          }
+        );
+
+        const captureData = await response.json();
+
+        dispatch({ type: 'PAY_SUCCESS', payload: captureData });
+        enqueueSnackbar('Payment successful', { variant: 'success' });
+      } catch (err) {
+        dispatch({ type: 'PAY_FAIL', payload: err.message });
+        enqueueSnackbar('Payment failed', { variant: 'error' });
+      }
+    });
+  }
 
   return (
     <Layout title={`Order ${id}`}>
@@ -261,6 +339,20 @@ const Order = () => {
                       </Grid>
                     </Grid>
                   </ListItem>
+                  {orderData.isPaid === false && (
+                    <ListItem>
+                      {isPending ? (
+                        <CircularProgress />
+                      ) : (
+                        <PayPalButtons
+                          createOrder={createOrder}
+                          onApprove={onApprove}
+                          onError={onError}
+                          style={{ layout: 'horizontal' }}
+                        />
+                      )}
+                    </ListItem>
+                  )}
                 </List>
               </Card>
             </Grid>

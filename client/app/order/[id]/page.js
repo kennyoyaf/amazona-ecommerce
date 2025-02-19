@@ -24,7 +24,6 @@ import TransitionLink from '@/utils/TransitionLink';
 import { useParams, useRouter } from 'next/navigation';
 import CheckoutWizard from '../../Components/checkoutWizard';
 import { useSnackbar } from 'notistack';
-import Cookies from 'js-cookie';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 
 const initialState = {
@@ -41,6 +40,12 @@ function reducer(state, action) {
       return { ...state, loading: false, order: action.payload, error: '' };
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
+    case 'PAY_REQUEST':
+      return { ...state, loading: true };
+    case 'PAY_SUCCESS':
+      return { ...state, loading: false, success: true };
+    case 'PAY_FAIL':
+      return { ...state, loading: false, error: action.payload };
     default:
       return state;
   }
@@ -49,23 +54,14 @@ function reducer(state, action) {
 const Order = () => {
   const router = useRouter();
   const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
-  const { closeSnackbar, enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const { id } = useParams();
   const { state } = useContext(Store);
   const { userInfo } = state;
   const [orderData, setOrderData] = useState([]);
+  const [order, setOrder] = useState(null);
 
   const [{ loading, error }, dispatch] = useReducer(reducer, initialState);
-
-  // const {
-  //   orderItems = [],
-  //   shippingAddress,
-  //   paymentMethod,
-  //   itemsPrice,
-  //   taxPrice,
-  //   shippingPrice,
-  //   totalPrice
-  // } = order;
 
   useEffect(() => {
     if (!userInfo) {
@@ -88,7 +84,6 @@ const Order = () => {
         );
 
         const data = await response.json();
-        console.log(data.data);
         setOrderData(data.data);
         dispatch({ type: 'FETCH_SUCCESS', payload: data.data });
       } catch (error) {
@@ -110,7 +105,6 @@ const Order = () => {
       );
 
       const { clientId } = await response.json();
-      console.log(clientId);
 
       if (clientId) {
         paypalDispatch({
@@ -128,32 +122,29 @@ const Order = () => {
     if (orderData?._id && !orderData?.isPaid) {
       loadPaypalScript();
     }
-  }, [id, userInfo, router, paypalDispatch]);
+  }, [id, userInfo, router, paypalDispatch, orderData?._id, orderData?.isPaid]);
 
   async function createOrder() {
     const response = await fetch('http://localhost:4000/product/create-order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-        // Authorization: `Bearer ${userInfo.accessToken}`
       },
       body: JSON.stringify({
-        amount: orderData.totalPrice.toFixed(2),
         currency: 'USD',
-        complete: 'payment-success',
-        cancel: 'payment-cancelled',
-        items: orderData.orderItems.map(item => ({
-          name: item.name,
-          quantity: item.quantity.toString(),
-          price: item.price.toFixed(2),
-          image: item.image
-        }))
+        amount: orderData.totalPrice
       })
     });
     const order = await response.json();
     console.log(order);
-    return order.orderID;
+    setOrder(order);
   }
+
+  useEffect(() => {
+    if (order?.approve_url) {
+      window.location.href = order.approve_url;
+    }
+  }, [order?.approve_url]);
 
   function onApprove(data, actions) {
     return actions.order.capture().then(async function (details) {

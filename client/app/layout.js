@@ -19,7 +19,10 @@ export default function RootLayout({ children }) {
           <SnackbarProvider
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           >
-            <PayPalScriptProvider deferLoading={false}>
+            <PayPalScriptProvider
+              deferLoading={false}
+              options={{ 'client-id': 'sb', currency: 'USD' }}
+            >
               {children}
             </PayPalScriptProvider>
           </SnackbarProvider>

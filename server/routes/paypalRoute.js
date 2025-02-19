@@ -9,7 +9,11 @@ router.post('/create-order', paypalController.createOrder);
 // Route to Capture an Order (User Confirms Payment)
 router.post('/capture-order/:orderId', paypalController.captureOrder);
 
-router.get('/payment-success', paypalController.complete);
-router.get('/payment-cancelled', paypalController.cancel);
+router.get('/success', paypalController.complete);
+router.get('/cancel', paypalController.cancel);
+
+router.get('/paypal-client-id', (req, res) => {
+  res.json({ clientId: process.env.PAYPAL_CLIENT_ID });
+});
 
 module.exports = router;

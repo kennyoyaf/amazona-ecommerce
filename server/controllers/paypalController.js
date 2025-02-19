@@ -8,7 +8,12 @@ const paypalController = {
   // Controller: Create a PayPal Order
   async createOrder(req, res) {
     try {
-      const { amount, currency = 'USD', items, complete, cancel } = req.body;
+      const {
+        amount,
+        currency = 'USD',
+        complete = 'success',
+        cancel = 'cancel'
+      } = req.body;
       if (!amount) {
         return responseHandler(res, 'Amount is required', 400, false, '');
       }
@@ -16,17 +21,23 @@ const paypalController = {
       const orderData = await createPayPalOrder(
         amount,
         currency,
-        items,
         complete,
         cancel
       );
 
+      if (!orderData || !orderData.links) {
+        console.error('🚨 PayPal order creation failed:', orderData);
+        return responseHandler(
+          res,
+          'PayPal order creation failed',
+          500,
+          false,
+          ''
+        );
+      }
+
       // Extract only the "approve" link
       const approveLink = orderData.links.find(link => link.rel === 'approve');
-
-      if (!approveLink) {
-        return responseHandler(res, 'Approval link not found', 500, false, '');
-      }
 
       return res.status(201).json({ approve_url: approveLink.href });
     } catch (error) {
@@ -53,9 +64,14 @@ const paypalController = {
 
   async complete(req, res) {
     try {
-      await paypal.captureData(req.query.token);
+      const { token } = req.query;
+      if (!token)
+        return responseHandler(res, 'Token is required', 400, false, '');
 
-      responseHandler(res, 'Payment was successful.', 200, true, '');
+      console.log(token);
+
+      const captureData = await capturePayPalOrder(token);
+      responseHandler(res, 'Payment was successful.', 200, true, captureData);
     } catch (error) {
       responseHandler(res, error.message, 500, false, '');
     }

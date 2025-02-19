@@ -1,4 +1,8 @@
-const { saveOrder, getOrderById } = require('../Services/orderService');
+const {
+  saveOrder,
+  getOrderById,
+  updateOrderPayment
+} = require('../Services/orderService');
 const { responseHandler } = require('../utils/responseHandler');
 const { orderValidation, validateId } = require('../utils/validation');
 
@@ -59,4 +63,36 @@ const getOrder = async (req, res) => {
   }
 };
 
-module.exports = { createOrder, getOrder };
+const updateOrder = async (req, res) => {
+  try {
+    const { error } = orderValidation(req.body);
+
+    if (error) {
+      const validationErrors = error.details.map(detail =>
+        detail.message.replace(/"/g, '')
+      );
+      return responseHandler(res, validationErrors, 400, false, '');
+    }
+
+    const { id } = req.params;
+    const paymentData = req.body.paymentResult; // Get payment details from request
+
+    const updatedOrder = await updateOrderPayment(id, paymentData);
+
+    if (!updatedOrder[0]) {
+      return responseHandler(res, updatedOrder[1], 404, false, '');
+    }
+
+    return responseHandler(
+      res,
+      'Payment updated successfully',
+      200,
+      true,
+      updatedOrder[1]
+    );
+  } catch (error) {
+    return responseHandler(res, error.message, 500, false, '');
+  }
+};
+
+module.exports = { createOrder, getOrder, updateOrder };

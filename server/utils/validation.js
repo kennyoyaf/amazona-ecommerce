@@ -189,6 +189,20 @@ const orderValidation = async field => {
       'string.base': 'Payment method must be a string.',
       'any.required': 'Payment method is required.'
     }),
+    paymentResult: Joi.object({
+      id: Joi.string().required().messages({
+        'string.base': 'Payment ID must be a string.',
+        'any.required': 'Payment ID is required.'
+      }),
+      status: Joi.string().required().messages({
+        'string.base': 'Payment status must be a string.',
+        'any.required': 'Payment status is required.'
+      }),
+      email_address: Joi.string().email().required().messages({
+        'string.email': 'Email address must be a valid email.',
+        'any.required': 'Email address is required.'
+      })
+    }).optional(),
     itemsPrice: Joi.number().positive().required().messages({
       'number.base': 'Items price must be a number.',
       'number.positive': 'Items price must be greater than zero.',

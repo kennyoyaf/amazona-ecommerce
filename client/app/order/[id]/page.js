@@ -41,11 +41,13 @@ function reducer(state, action) {
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
     case 'PAY_REQUEST':
-      return { ...state, loading: true };
+      return { ...state, loadingPay: true };
     case 'PAY_SUCCESS':
-      return { ...state, loading: false, successPay: true };
+      return { ...state, loadingPay: false, successPay: true };
     case 'PAY_FAIL':
-      return { ...state, loading: false, error: action.payload };
+      return { ...state, loadingPay: false, errorPay: action.payload };
+    case 'PAY_RESET':
+      return { ...state, loadingPay: false, successPay: false, errorPay: '' };
     default:
       return state;
   }
@@ -61,7 +63,10 @@ const Order = () => {
   const [orderData, setOrderData] = useState([]);
   const [order, setOrder] = useState(null);
 
-  const [{ loading, error }, dispatch] = useReducer(reducer, initialState);
+  const [{ loading, error, successPay }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
 
   useEffect(() => {
     if (!userInfo) {
@@ -119,10 +124,21 @@ const Order = () => {
       }
     };
 
-    if (orderData?._id && !orderData?.isPaid) {
+    if (orderData?._id && !orderData?.isPaid && !successPay) {
       loadPaypalScript();
     }
-  }, [id, userInfo, router, paypalDispatch, orderData?._id, orderData?.isPaid]);
+    if (successPay) {
+      dispatch({ type: 'PAY_RESET' });
+    }
+  }, [
+    id,
+    userInfo,
+    router,
+    paypalDispatch,
+    orderData?._id,
+    orderData?.isPaid,
+    successPay
+  ]);
 
   async function createOrder() {
     const response = await fetch('http://localhost:4000/product/create-order', {
@@ -132,7 +148,8 @@ const Order = () => {
       },
       body: JSON.stringify({
         currency: 'USD',
-        amount: orderData.totalPrice
+        amount: orderData.totalPrice,
+        urlId: orderData._id
       })
     });
     const order = await response.json();

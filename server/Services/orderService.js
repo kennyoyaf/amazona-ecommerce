@@ -19,6 +19,8 @@ const updateOrderPayment = async (id, paymentData) =>
     {
       isPaid: true,
       paidAt: new Date(),
+      isDelivered: true,
+      deliveredAt: new Date(),
       paymentResult: {
         id: paymentData.id,
         status: paymentData.status,

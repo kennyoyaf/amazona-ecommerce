@@ -5,7 +5,11 @@ const {
   getAllTheOrders
 } = require('../Services/orderService');
 const { responseHandler } = require('../utils/responseHandler');
-const { orderValidation, validateId } = require('../utils/validation');
+const {
+  orderValidation,
+  validateId,
+  orderUpdateValidation
+} = require('../utils/validation');
 
 const createOrder = async (req, res) => {
   try {
@@ -72,7 +76,7 @@ const updateOrder = async (req, res) => {
       return responseHandler(res, allErrors, 400, false, '');
     }
 
-    const { details } = await orderValidation(req.body);
+    const { details } = await orderUpdateValidation(req.body);
     if (details) {
       let allErrors = details.map(detail => detail.message.replace(/"/g, ''));
       return responseHandler(res, allErrors, 400, false, '');

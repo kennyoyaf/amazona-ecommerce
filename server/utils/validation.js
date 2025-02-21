@@ -245,6 +245,25 @@ const orderValidation = async field => {
   }
 };
 
+const orderUpdateValidation = async field => {
+  const schema = Joi.object({
+    isPaid: Joi.boolean().optional(),
+    paidAt: Joi.date().optional(),
+    isDelivered: Joi.boolean().optional(),
+    deliveredAt: Joi.date().optional(),
+    paymentResult: Joi.object({
+      id: Joi.string().optional(),
+      status: Joi.string().optional(),
+      email_address: Joi.string().email().optional()
+    }).optional()
+  }).unknown(true); // Allows extra fields without validation errors
+  try {
+    return await schema.validateAsync(field, { abortEarly: false });
+  } catch (err) {
+    return err;
+  }
+};
+
 module.exports = {
   clientLoginValidation,
   clientSignupValidation,
@@ -253,5 +272,6 @@ module.exports = {
   validateProduct,
   validateId,
   validateOrderItems,
-  orderValidation
+  orderValidation,
+  orderUpdateValidation
 };

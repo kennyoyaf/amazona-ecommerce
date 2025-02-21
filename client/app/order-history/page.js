@@ -71,7 +71,6 @@ export default function OrderHistory() {
         );
 
         const data = await response.json();
-        console.log(data);
         setOrderData(data.data);
         dispatch({ type: 'FETCH_SUCCESS', payload: data.data });
       } catch (error) {

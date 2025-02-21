@@ -163,26 +163,6 @@ const Order = () => {
     }
   }, [order?.approve_url]);
 
-  async function markOrderAsPaid(orderId, paymentResult) {
-    try {
-      const response = await fetch(`/product/order/${orderId}/pay`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${userInfo.accessToken}`
-        },
-        body: JSON.stringify({ paymentResult })
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        console.log('Payment updated successfully');
-      }
-    } catch (error) {
-      console.error('Error updating payment:', error);
-    }
-  }
-
   function onApprove(data, actions) {
     return actions.order.capture().then(async function (details) {
       try {
@@ -201,9 +181,6 @@ const Order = () => {
 
         const captureData = await response.json();
         console.log('Payment capture data:', captureData);
-
-        // Mark order as paid after successful payment capture
-        await markOrderAsPaid(id, captureData);
 
         dispatch({ type: 'PAY_SUCCESS', payload: captureData });
         enqueueSnackbar('Payment successful', { variant: 'success' });

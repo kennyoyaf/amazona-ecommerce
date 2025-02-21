@@ -13,24 +13,26 @@ const saveOrder = async body => {
 
 const getOrderById = async id => await Order.findById(id);
 
-const updateOrderPayment = async (id, paymentData) => {
-  try {
-    const order = await Order.findById(id);
-    if (!order) return [false, 'Order not found'];
+const updateOrderPayment = async (id, paymentData) =>
+  await Order.findByIdAndUpdate(
+    id,
+    {
+      isPaid: true,
+      paidAt: new Date(),
+      paymentResult: {
+        id: paymentData.id,
+        status: paymentData.status,
+        email_address: paymentData.email_address
+      }
+    },
+    { new: true }
+  );
 
-    order.isPaid = true;
-    order.paidAt = new Date();
-    order.paymentResult = {
-      id: paymentData.id,
-      status: paymentData.status,
-      email_address: paymentData.email_address
-    };
+const getAllTheOrders = async () => await Order.find();
 
-    const updatedOrder = await order.save();
-    return [true, updatedOrder];
-  } catch (error) {
-    return [false, error.message];
-  }
+module.exports = {
+  saveOrder,
+  getOrderById,
+  updateOrderPayment,
+  getAllTheOrders
 };
-
-module.exports = { saveOrder, getOrderById, updateOrderPayment };

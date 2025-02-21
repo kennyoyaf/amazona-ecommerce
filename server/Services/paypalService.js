@@ -33,7 +33,8 @@ async function createPayPalOrder(
   amount,
   currency = 'USD',
   complete = 'success',
-  cancel = 'cancel'
+  cancel = 'cancel',
+  urlId
 ) {
   const accessToken = await getPayPalAccessToken();
 
@@ -46,8 +47,8 @@ async function createPayPalOrder(
     body: JSON.stringify({
       intent: 'CAPTURE',
       application_context: {
-        return_url: `http://localhost:4000/product/${complete}`, // Redirect after approval
-        cancel_url: `http://localhost:4000/product/${cancel}`, // Redirect if user cancels
+        return_url: `http://localhost:3000/order/${urlId}/${complete}`, // Redirect after approval
+        cancel_url: `http://localhost:3000/order/${urlId}/${cancel}`, // Redirect if user cancels
         user_action: 'PAY_NOW', // Forces "Pay Now" instead of "Continue",
         brand_name: 'Next Amazona'
       },

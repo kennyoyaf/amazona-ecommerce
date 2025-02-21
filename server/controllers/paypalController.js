@@ -12,7 +12,8 @@ const paypalController = {
         amount,
         currency = 'USD',
         complete = 'success',
-        cancel = 'cancel'
+        cancel = 'cancel',
+        urlId
       } = req.body;
       if (!amount) {
         return responseHandler(res, 'Amount is required', 400, false, '');
@@ -22,7 +23,8 @@ const paypalController = {
         amount,
         currency,
         complete,
-        cancel
+        cancel,
+        urlId
       );
 
       if (!orderData || !orderData.links) {

@@ -1,7 +1,8 @@
 const {
   saveOrder,
   getOrderById,
-  updateOrderPayment
+  updateOrderPayment,
+  getAllTheOrders
 } = require('../Services/orderService');
 const { responseHandler } = require('../utils/responseHandler');
 const { orderValidation, validateId } = require('../utils/validation');
@@ -65,34 +66,51 @@ const getOrder = async (req, res) => {
 
 const updateOrder = async (req, res) => {
   try {
-    const { error } = orderValidation(req.body);
+    const { details: idErr } = await validateId(req.params);
+    if (idErr) {
+      let allErrors = idErr.map(detail => detail.message.replace(/"/g, ''));
+      return responseHandler(res, allErrors, 400, false, '');
+    }
 
-    if (error) {
-      const validationErrors = error.details.map(detail =>
-        detail.message.replace(/"/g, '')
-      );
-      return responseHandler(res, validationErrors, 400, false, '');
+    const { details } = await orderValidation(req.body);
+    if (details) {
+      let allErrors = details.map(detail => detail.message.replace(/"/g, ''));
+      return responseHandler(res, allErrors, 400, false, '');
     }
 
     const { id } = req.params;
-    const paymentData = req.body.paymentResult; // Get payment details from request
+    const paymentData = req.body;
 
-    const updatedOrder = await updateOrderPayment(id, paymentData);
+    const checkId = await getOrderById(id);
+    console.log(checkId);
 
-    if (!updatedOrder[0]) {
-      return responseHandler(res, updatedOrder[1], 404, false, '');
+    if (!checkId) {
+      return responseHandler(res, 'Order not found', 404, false, '');
     }
 
+    const check = await updateOrderPayment(id, paymentData);
+    console.log(check);
+
+    return check
+      ? responseHandler(res, 'Order edited successfully', 200, true, check)
+      : responseHandler(res, 'Error editing Order', 400, false, '');
+  } catch (error) {
+    return responseHandler(res, error.message, 500, false, '');
+  }
+};
+
+const getAllOrders = async (req, res) => {
+  try {
     return responseHandler(
       res,
-      'Payment updated successfully',
+      'All orders retrieved successfully',
       200,
       true,
-      updatedOrder[1]
+      await getAllTheOrders()
     );
   } catch (error) {
     return responseHandler(res, error.message, 500, false, '');
   }
 };
 
-module.exports = { createOrder, getOrder, updateOrder };
+module.exports = { createOrder, getOrder, updateOrder, getAllOrders };

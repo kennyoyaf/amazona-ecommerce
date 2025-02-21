@@ -37,11 +37,6 @@ const Login = () => {
         data
       );
 
-      console.log({
-        user: response.data.data.user,
-        accessToken: response.data.data.accessToken
-      });
-
       dispatch({
         type: 'USER_LOGIN',
         payload: {

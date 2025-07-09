@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Store } from '@/utils/Store';
-import React, { useContext, useEffect, useState } from 'react';
-import Layout from '../Components/Layout';
+import { Store } from "@/utils/Store";
+import React, { useContext, useEffect, useState } from "react";
+import Layout from "../Components/Layout";
 import {
   Box,
   Button,
@@ -18,35 +18,35 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
-} from '@mui/material';
-import Link from 'next/link';
-import Image from 'next/image';
-import axios from 'axios';
-import TransitionLink from '@/utils/TransitionLink';
-import { useRouter } from 'next/navigation';
+  Typography,
+} from "@mui/material";
+import Link from "next/link";
+import Image from "next/image";
+import axios from "axios";
+import TransitionLink from "@/utils/TransitionLink";
+import { useRouter } from "next/navigation";
 
 const Cart = () => {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const { userInfo } = state;
   const {
-    cart: { cartItems = [] }
+    cart: { cartItems = [] },
   } = state;
 
   const updateCartHandler = async (item, quantity) => {
     const { data } = await axios.get(
-      `http://localhost:4000/product/get-product/${item._id}`
+      `https://amazona-ecommerce.onrender.com/${item._id}`
     );
     if (data.countInStock < quantity) {
-      window.alert('Sorry. Product is out of stock');
+      window.alert("Sorry. Product is out of stock");
       return;
     }
-    dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity } });
+    dispatch({ type: "CART_ADD_ITEM", payload: { ...item, quantity } });
   };
 
-  const removeHandler = async item => {
-    dispatch({ type: 'CART_REMOVE_ITEM', payload: item });
+  const removeHandler = async (item) => {
+    dispatch({ type: "CART_REMOVE_ITEM", payload: item });
   };
 
   const [isMounted, setIsMounted] = useState(false);
@@ -61,22 +61,22 @@ const Cart = () => {
 
   const checkoutHandler = () => {
     if (userInfo) {
-      router.push('/shipping');
+      router.push("/shipping");
     } else {
-      router.push('/login');
+      router.push("/login");
     }
   };
 
   return (
     <Layout title="Shopping Cart">
-      <Box sx={{ marginLeft: { md: '80px' } }}>
+      <Box sx={{ marginLeft: { md: "80px" } }}>
         <Typography component="h1" variant="h1">
           Shopping Cart
         </Typography>
         {cartItems.length === 0 ? (
           <div>
-            Cart is empty.{' '}
-            <Link href="/" style={{ color: 'red' }}>
+            Cart is empty.{" "}
+            <Link href="/" style={{ color: "red" }}>
               Go Shopping
             </Link>
           </div>
@@ -95,7 +95,7 @@ const Cart = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {cartItems.map(item => (
+                    {cartItems.map((item) => (
                       <TableRow key={item._id}>
                         <TableCell>
                           <Link href={`/product/${item._id}`} passHref>
@@ -118,11 +118,11 @@ const Cart = () => {
                         <TableCell align="right">
                           <Select
                             value={item.quantity}
-                            onChange={e =>
+                            onChange={(e) =>
                               updateCartHandler(item, e.target.value)
                             }
                           >
-                            {[...Array(item.countInStock).keys()].map(x => (
+                            {[...Array(item.countInStock).keys()].map((x) => (
                               <MenuItem key={x + 1} value={x + 1}>
                                 {x + 1}
                               </MenuItem>
@@ -150,8 +150,8 @@ const Cart = () => {
                 <List>
                   <ListItem>
                     <Typography variant="h2">
-                      Subtotal ({cartItems.reduce((a, c) => a + c.quantity, 0)}{' '}
-                      items) : ${' '}
+                      Subtotal ({cartItems.reduce((a, c) => a + c.quantity, 0)}{" "}
+                      items) : ${" "}
                       {cartItems.reduce((a, c) => a + c.quantity * c.price, 0)}
                     </Typography>
                   </ListItem>

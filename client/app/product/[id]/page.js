@@ -26,7 +26,7 @@ export default function ProductScreen() {
     const fetchDataForPosts = async () => {
       try {
         const response = await fetch(
-          `http://localhost:4000/product/get-product/${id}`,
+          `https://amazona-ecommerce.onrender.com/product/get-product/${id}`,
           { cache: "no-store" }
         );
 

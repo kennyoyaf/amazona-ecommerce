@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Store } from '@/utils/Store';
-import React, { useContext, useEffect, useState } from 'react';
-import Layout from '../Components/Layout';
+import { Store } from "@/utils/Store";
+import React, { useContext, useEffect, useState } from "react";
+import Layout from "../Components/Layout";
 import {
   Box,
   Button,
@@ -17,15 +17,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
-} from '@mui/material';
-import Link from 'next/link';
-import Image from 'next/image';
-import TransitionLink from '@/utils/TransitionLink';
-import { useRouter } from 'next/navigation';
-import CheckoutWizard from '../Components/checkoutWizard';
-import { useSnackbar } from 'notistack';
-import Cookies from 'js-cookie';
+  Typography,
+} from "@mui/material";
+import Link from "next/link";
+import Image from "next/image";
+import TransitionLink from "@/utils/TransitionLink";
+import { useRouter } from "next/navigation";
+import CheckoutWizard from "../Components/checkoutWizard";
+import { useSnackbar } from "notistack";
+import Cookies from "js-cookie";
 
 const Placeorder = () => {
   const router = useRouter();
@@ -33,7 +33,7 @@ const Placeorder = () => {
   const { state, dispatch } = useContext(Store);
   const {
     userInfo,
-    cart: { cartItems, shippingAddress, paymentMethod }
+    cart: { cartItems, shippingAddress, paymentMethod },
   } = state;
 
   const [isMounted, setIsMounted] = useState(false);
@@ -42,7 +42,7 @@ const Placeorder = () => {
   useEffect(() => {
     setIsMounted(true);
     if (!paymentMethod) {
-      router.push('/payment');
+      router.push("/payment");
     }
     // if (cartItems.length === 0) {
     //   router.push('/cart');
@@ -56,7 +56,7 @@ const Placeorder = () => {
     closeSnackbar();
     try {
       setLoading(true);
-      const round2 = num => Math.round(num * 100 + Number.EPSILON) / 100; // 123.456 => 123.46
+      const round2 = (num) => Math.round(num * 100 + Number.EPSILON) / 100; // 123.456 => 123.46
       const itemsPrice = round2(
         cartItems.reduce((a, c) => a + c.price * c.quantity, 0)
       );
@@ -65,11 +65,11 @@ const Placeorder = () => {
       const totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
 
       const payload = {
-        orderItems: cartItems.map(item => ({
+        orderItems: cartItems.map((item) => ({
           name: item.name,
           quantity: item.quantity,
           image: item.image,
-          price: item.price
+          price: item.price,
         })),
         shippingAddress,
         paymentMethod,
@@ -78,47 +78,47 @@ const Placeorder = () => {
         taxPrice,
         totalPrice,
         isPaid: false,
-        isDelivered: false
+        isDelivered: false,
       };
 
       const response = await fetch(
-        'http://localhost:4000/product/order/details',
+        "https://amazona-ecommerce.onrender.com/product/order/details",
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${userInfo.accessToken}`
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userInfo.accessToken}`,
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         }
       );
 
       if (!response.ok) {
-        throw new Error('Failed to place order');
+        throw new Error("Failed to place order");
       }
 
       const data = await response.json();
       const newData = data.data;
       router.push(`/order/${newData._id}`);
-      dispatch({ type: 'CART_CLEAR' });
-      Cookies.remove('cartItems');
+      dispatch({ type: "CART_CLEAR" });
+      Cookies.remove("cartItems");
       setLoading(false);
     } catch (error) {
       setLoading(false);
       if (error.response?.status === 401) {
-        enqueueSnackbar('Unauthorized: Please log in again.', {
-          variant: 'error'
+        enqueueSnackbar("Unauthorized: Please log in again.", {
+          variant: "error",
         });
-        router.push('/login');
+        router.push("/login");
       } else {
-        enqueueSnackbar('Failed to place order. Try again.', {
-          variant: 'error'
+        enqueueSnackbar("Failed to place order. Try again.", {
+          variant: "error",
         });
       }
     }
   };
 
-  const round2 = num => Math.round(num * 100 + Number.EPSILON) / 100; // 123.456 => 123.46
+  const round2 = (num) => Math.round(num * 100 + Number.EPSILON) / 100; // 123.456 => 123.46
   const itemsPrice = round2(
     cartItems.reduce((a, c) => a + c.price * c.quantity, 0)
   );
@@ -128,14 +128,14 @@ const Placeorder = () => {
 
   return (
     <Layout title="Place Order">
-      <Box sx={{ marginLeft: { md: '80px' } }}>
+      <Box sx={{ marginLeft: { md: "80px" } }}>
         <CheckoutWizard activeStep={3} />
         <Typography component="h1" variant="h1">
           Place Order
         </Typography>
         <Grid container spacing={1}>
           <Grid item md={9} xs={12}>
-            <Card sx={{ margin: '10px 0' }}>
+            <Card sx={{ margin: "10px 0" }}>
               <List>
                 <ListItem>
                   <Typography component="h2" variant="h2">
@@ -143,13 +143,13 @@ const Placeorder = () => {
                   </Typography>
                 </ListItem>
                 <ListItem>
-                  {shippingAddress?.fullName}, {shippingAddress?.address},{' '}
-                  {shippingAddress?.city}, {shippingAddress?.postalCode},{' '}
+                  {shippingAddress?.fullName}, {shippingAddress?.address},{" "}
+                  {shippingAddress?.city}, {shippingAddress?.postalCode},{" "}
                   {shippingAddress?.country}
                 </ListItem>
               </List>
             </Card>
-            <Card sx={{ margin: '10px 0' }}>
+            <Card sx={{ margin: "10px 0" }}>
               <List>
                 <ListItem>
                   <Typography component="h2" variant="h2">
@@ -159,7 +159,7 @@ const Placeorder = () => {
                 <ListItem>{paymentMethod}</ListItem>
               </List>
             </Card>
-            <Card sx={{ margin: '10px 0' }}>
+            <Card sx={{ margin: "10px 0" }}>
               <List>
                 <ListItem>
                   <Typography component="h2" variant="h2">
@@ -178,7 +178,7 @@ const Placeorder = () => {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {cartItems.map(item => (
+                        {cartItems.map((item) => (
                           <TableRow key={item._id}>
                             <TableCell>
                               <Link href={`/product/${item._id}`} passHref>
@@ -216,7 +216,7 @@ const Placeorder = () => {
             </Card>
           </Grid>
           <Grid item md={3} xs={12}>
-            <Card sx={{ md: { margin: '10px 0' } }}>
+            <Card sx={{ md: { margin: "10px 0" } }}>
               <List>
                 <ListItem>
                   <Typography variant="h2">Order Summary</Typography>

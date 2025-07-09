@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import React, { useContext, useEffect, useState } from 'react';
-import Layout from '../Components/Layout';
-import { Button, List, ListItem, TextField, Typography } from '@mui/material';
-import { Controller, useForm } from 'react-hook-form';
-import Link from 'next/link';
-import axios from 'axios';
-import { Store } from '@/utils/Store';
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
-import { useSnackbar } from 'notistack';
+import React, { useContext, useEffect, useState } from "react";
+import Layout from "../Components/Layout";
+import { Button, List, ListItem, TextField, Typography } from "@mui/material";
+import { Controller, useForm } from "react-hook-form";
+import Link from "next/link";
+import axios from "axios";
+import { Store } from "@/utils/Store";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { useSnackbar } from "notistack";
 
 const Register = () => {
   const {
     handleSubmit,
     control,
-    formState: { errors }
+    formState: { errors },
   } = useForm();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const router = useRouter();
@@ -25,42 +25,42 @@ const Register = () => {
 
   useEffect(() => {
     if (userInfo) {
-      router.push('/shipping');
+      router.push("/shipping");
     }
   }, [userInfo, router]);
 
-  const submitHandler = async data => {
+  const submitHandler = async (data) => {
     closeSnackbar();
     setIsLoading(true);
 
     try {
       const response = await axios.post(
-        'http://localhost:4000/product/client/auth/signup',
+        "https://amazona-ecommerce.onrender.com/product/client/auth/signup",
         data
       );
 
       dispatch({
-        type: 'USER_LOGIN',
+        type: "USER_LOGIN",
         payload: {
           user: response.data.data.user,
-          accessToken: response.data.data.accessToken
-        }
+          accessToken: response.data.data.accessToken,
+        },
       });
 
       Cookies.set(
-        'userInfo',
+        "userInfo",
         JSON.stringify({
           user: response.data.data.user,
-          accessToken: response.data.data.accessToken
+          accessToken: response.data.data.accessToken,
         }),
         { expires: 7 }
       );
 
-      enqueueSnackbar('Registration successful!', { variant: 'success' });
-      router.push('/login?redirect=/shipping');
+      enqueueSnackbar("Registration successful!", { variant: "success" });
+      router.push("/login?redirect=/shipping");
     } catch (error) {
-      enqueueSnackbar(error.response?.data || 'Registration failed', {
-        variant: 'error'
+      enqueueSnackbar(error.response?.data || "Registration failed", {
+        variant: "error",
       });
     } finally {
       setIsLoading(false);
@@ -71,7 +71,7 @@ const Register = () => {
     <Layout>
       <form
         onSubmit={handleSubmit(submitHandler)}
-        style={{ maxWidth: 800, margin: '0 auto' }}
+        style={{ maxWidth: 800, margin: "0 auto" }}
       >
         <Typography component="h1" variant="h1">
           Register
@@ -82,7 +82,7 @@ const Register = () => {
               name="firstName"
               control={control}
               defaultValue=""
-              rules={{ required: 'First name is required' }}
+              rules={{ required: "First name is required" }}
               render={({ field }) => (
                 <TextField
                   variant="outlined"
@@ -90,9 +90,9 @@ const Register = () => {
                   id="firstName"
                   label="Firstname"
                   error={Boolean(errors.firstName)}
-                  helperText={errors.firstName?.message || ''}
+                  helperText={errors.firstName?.message || ""}
                   {...field}
-                  sx={{ input: { color: 'black' } }}
+                  sx={{ input: { color: "black" } }}
                 />
               )}
             />
@@ -102,7 +102,7 @@ const Register = () => {
               name="lastName"
               control={control}
               defaultValue=""
-              rules={{ required: 'Last name is required' }}
+              rules={{ required: "Last name is required" }}
               render={({ field }) => (
                 <TextField
                   variant="outlined"
@@ -110,9 +110,9 @@ const Register = () => {
                   id="lastName"
                   label="Lastname"
                   error={Boolean(errors.lastName)}
-                  helperText={errors.lastName?.message || ''}
+                  helperText={errors.lastName?.message || ""}
                   {...field}
-                  sx={{ input: { color: 'black' } }}
+                  sx={{ input: { color: "black" } }}
                 />
               )}
             />
@@ -123,11 +123,11 @@ const Register = () => {
               control={control}
               defaultValue=""
               rules={{
-                required: 'Email is required',
+                required: "Email is required",
                 pattern: {
                   value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i,
-                  message: 'Invalid email address'
-                }
+                  message: "Invalid email address",
+                },
               }}
               render={({ field }) => (
                 <TextField
@@ -136,9 +136,9 @@ const Register = () => {
                   id="email"
                   label="Email"
                   error={Boolean(errors.email)}
-                  helperText={errors.email?.message || ''}
+                  helperText={errors.email?.message || ""}
                   {...field}
-                  sx={{ input: { color: 'black' } }}
+                  sx={{ input: { color: "black" } }}
                 />
               )}
             />
@@ -149,11 +149,11 @@ const Register = () => {
               control={control}
               defaultValue=""
               rules={{
-                required: 'Password is required',
+                required: "Password is required",
                 minLength: {
                   value: 6,
-                  message: 'Password must be at least 6 characters'
-                }
+                  message: "Password must be at least 6 characters",
+                },
               }}
               render={({ field }) => (
                 <TextField
@@ -163,9 +163,9 @@ const Register = () => {
                   label="Password"
                   type="password"
                   error={Boolean(errors.password)}
-                  helperText={errors.password?.message || ''}
+                  helperText={errors.password?.message || ""}
                   {...field}
-                  sx={{ input: { color: 'black' } }}
+                  sx={{ input: { color: "black" } }}
                 />
               )}
             />
@@ -178,7 +178,7 @@ const Register = () => {
               color="primary"
               disabled={isLoading}
             >
-              {isLoading ? 'Registering...' : 'Register'}
+              {isLoading ? "Registering..." : "Register"}
             </Button>
           </ListItem>
           <ListItem>

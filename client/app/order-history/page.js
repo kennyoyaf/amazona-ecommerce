@@ -60,7 +60,7 @@ export default function OrderHistory() {
         dispatch({ type: "FETCH_REQUEST" });
 
         const response = await fetch(
-          `http://localhost:4000/product/order-history`,
+          `https://amazona-ecommerce.onrender.com/product/order-history`,
           {
             method: "GET",
             headers: {

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { Store } from '@/utils/Store';
-import React, { useContext, useEffect, useState } from 'react';
-import Layout from '../Components/Layout';
+import { useRouter } from "next/navigation";
+import { Store } from "@/utils/Store";
+import React, { useContext, useEffect, useState } from "react";
+import Layout from "../Components/Layout";
 import {
   Box,
   Button,
@@ -13,20 +13,20 @@ import {
   ListItem,
   ListItemText,
   TextField,
-  Typography
-} from '@mui/material';
-import Link from 'next/link';
-import { Controller, useForm } from 'react-hook-form';
-import { useSnackbar } from 'notistack';
-import Cookies from 'js-cookie';
-import axios from 'axios';
+  Typography,
+} from "@mui/material";
+import Link from "next/link";
+import { Controller, useForm } from "react-hook-form";
+import { useSnackbar } from "notistack";
+import Cookies from "js-cookie";
+import axios from "axios";
 
 export default function Profile() {
   const {
     handleSubmit,
     control,
     setValue,
-    formState: { errors }
+    formState: { errors },
   } = useForm();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -36,43 +36,43 @@ export default function Profile() {
 
   useEffect(() => {
     if (!userInfo) {
-      return router.push('/login');
+      return router.push("/login");
     }
-    setValue('name', userInfo.name);
-    setValue('email', userInfo.email);
+    setValue("name", userInfo.name);
+    setValue("email", userInfo.email);
   });
 
-  const submitHandler = async data => {
+  const submitHandler = async (data) => {
     closeSnackbar();
     setIsLoading(true);
 
     try {
       const response = await axios.put(
-        'http://localhost:4000/product/client/auth/signup',
+        "https://amazona-ecommerce.onrender.com/product/client/auth/signup",
         data
       );
 
       dispatch({
-        type: 'USER_LOGIN',
+        type: "USER_LOGIN",
         payload: {
           user: response.data.data.user,
-          accessToken: response.data.data.accessToken
-        }
+          accessToken: response.data.data.accessToken,
+        },
       });
 
       Cookies.set(
-        'userInfo',
+        "userInfo",
         JSON.stringify({
           user: response.data.data.user,
-          accessToken: response.data.data.accessToken
+          accessToken: response.data.data.accessToken,
         }),
         { expires: 7 }
       );
 
-      enqueueSnackbar('Profile updated successful!', { variant: 'success' });
+      enqueueSnackbar("Profile updated successful!", { variant: "success" });
     } catch (error) {
-      enqueueSnackbar(error.response?.data || 'Registration failed', {
-        variant: 'error'
+      enqueueSnackbar(error.response?.data || "Registration failed", {
+        variant: "error",
       });
     } finally {
       setIsLoading(false);
@@ -81,34 +81,34 @@ export default function Profile() {
 
   return (
     <Layout title="Profile">
-      <Box sx={{ marginLeft: { md: '80px' } }}>
+      <Box sx={{ marginLeft: { md: "80px" } }}>
         <Grid container spacing={1}>
           <Grid item md={3} xs={12}>
-            <Card sx={{ margin: '10px 0' }}>
+            <Card sx={{ margin: "10px 0" }}>
               <List>
                 <Link
                   href="/profile"
-                  style={{ textDecoration: 'none' }}
+                  style={{ textDecoration: "none" }}
                   passHref
                   legacyBehavior
                 >
                   <ListItem selected component="a">
                     <ListItemText
                       primary="User Profile"
-                      sx={{ color: 'yellowgreen' }}
+                      sx={{ color: "yellowgreen" }}
                     ></ListItemText>
                   </ListItem>
                 </Link>
                 <Link
                   href="/order-history"
-                  style={{ textDecoration: 'none' }}
+                  style={{ textDecoration: "none" }}
                   passHref
                   legacyBehavior
                 >
                   <ListItem component="a">
                     <ListItemText
                       primary="Order History"
-                      sx={{ color: 'yellowgreen' }}
+                      sx={{ color: "yellowgreen" }}
                     ></ListItemText>
                   </ListItem>
                 </Link>
@@ -117,7 +117,7 @@ export default function Profile() {
           </Grid>
 
           <Grid item md={9} xs={12}>
-            <Card sx={{ margin: '10px 0' }}>
+            <Card sx={{ margin: "10px 0" }}>
               <List>
                 <ListItem>
                   <Typography component="h1" variant="h1">
@@ -128,7 +128,7 @@ export default function Profile() {
                 <ListItem>
                   <form
                     onSubmit={handleSubmit(submitHandler)}
-                    style={{ maxWidth: 800, margin: '0 auto' }}
+                    style={{ maxWidth: 800, margin: "0 auto" }}
                   >
                     <List>
                       <ListItem>
@@ -136,7 +136,7 @@ export default function Profile() {
                           name="firstName"
                           control={control}
                           defaultValue=""
-                          rules={{ required: 'First name is required' }}
+                          rules={{ required: "First name is required" }}
                           render={({ field }) => (
                             <TextField
                               variant="outlined"
@@ -144,9 +144,9 @@ export default function Profile() {
                               id="firstName"
                               label="Firstname"
                               error={Boolean(errors.firstName)}
-                              helperText={errors.firstName?.message || ''}
+                              helperText={errors.firstName?.message || ""}
                               {...field}
-                              sx={{ input: { color: 'black' } }}
+                              sx={{ input: { color: "black" } }}
                             />
                           )}
                         />
@@ -156,7 +156,7 @@ export default function Profile() {
                           name="lastName"
                           control={control}
                           defaultValue=""
-                          rules={{ required: 'Last name is required' }}
+                          rules={{ required: "Last name is required" }}
                           render={({ field }) => (
                             <TextField
                               variant="outlined"
@@ -164,9 +164,9 @@ export default function Profile() {
                               id="lastName"
                               label="Lastname"
                               error={Boolean(errors.lastName)}
-                              helperText={errors.lastName?.message || ''}
+                              helperText={errors.lastName?.message || ""}
                               {...field}
-                              sx={{ input: { color: 'black' } }}
+                              sx={{ input: { color: "black" } }}
                             />
                           )}
                         />
@@ -177,12 +177,12 @@ export default function Profile() {
                           control={control}
                           defaultValue=""
                           rules={{
-                            required: 'Email is required',
+                            required: "Email is required",
                             pattern: {
                               value:
                                 /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i,
-                              message: 'Invalid email address'
-                            }
+                              message: "Invalid email address",
+                            },
                           }}
                           render={({ field }) => (
                             <TextField
@@ -191,9 +191,9 @@ export default function Profile() {
                               id="email"
                               label="Email"
                               error={Boolean(errors.email)}
-                              helperText={errors.email?.message || ''}
+                              helperText={errors.email?.message || ""}
                               {...field}
-                              sx={{ input: { color: 'black' } }}
+                              sx={{ input: { color: "black" } }}
                             />
                           )}
                         />
@@ -204,10 +204,10 @@ export default function Profile() {
                           control={control}
                           defaultValue=""
                           rules={{
-                            validate: value =>
-                              value === '' ||
+                            validate: (value) =>
+                              value === "" ||
                               value.length > 5 ||
-                              'Password must be at least 6 characters long'
+                              "Password must be at least 6 characters long",
                           }}
                           render={({ field }) => (
                             <TextField
@@ -219,11 +219,11 @@ export default function Profile() {
                               error={Boolean(errors.password)}
                               helperText={
                                 errors.password
-                                  ? 'Password length is more than 5'
-                                  : ''
+                                  ? "Password length is more than 5"
+                                  : ""
                               }
                               {...field}
-                              sx={{ input: { color: 'black' } }}
+                              sx={{ input: { color: "black" } }}
                             />
                           )}
                         />
@@ -236,7 +236,7 @@ export default function Profile() {
                           color="primary"
                           disabled={isLoading}
                         >
-                          {isLoading ? 'Updating...' : 'Update'}
+                          {isLoading ? "Updating..." : "Update"}
                         </Button>
                       </ListItem>
                     </List>

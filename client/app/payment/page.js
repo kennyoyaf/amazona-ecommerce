@@ -27,6 +27,7 @@ const Payment = () => {
   const {
     cart: { shippingAddress },
   } = state;
+
   useEffect(() => {
     if (!shippingAddress.address) {
       router.push("/shipping");

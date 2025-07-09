@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import React, { useContext, useEffect, useState } from 'react';
-import Layout from '../Components/Layout';
-import { Button, List, ListItem, TextField, Typography } from '@mui/material';
-import { Controller, useForm } from 'react-hook-form';
-import Link from 'next/link';
-import axios from 'axios';
-import { Store } from '@/utils/Store';
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
-import { useSnackbar } from 'notistack';
+import React, { useContext, useEffect, useState } from "react";
+import Layout from "../Components/Layout";
+import { Button, List, ListItem, TextField, Typography } from "@mui/material";
+import { Controller, useForm } from "react-hook-form";
+import Link from "next/link";
+import axios from "axios";
+import { Store } from "@/utils/Store";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { useSnackbar } from "notistack";
 
 const Login = () => {
   const {
     handleSubmit,
     control,
-    formState: { errors }
+    formState: { errors },
   } = useForm();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const router = useRouter();
@@ -25,41 +25,41 @@ const Login = () => {
 
   useEffect(() => {
     if (userInfo) {
-      router.push('/');
+      router.push("/");
     }
   }, [userInfo, router]);
 
-  const submitHandler = async data => {
+  const submitHandler = async (data) => {
     closeSnackbar();
     try {
       const response = await axios.post(
-        'http://localhost:4000/product/client/auth/login',
+        "https://amazona-ecommerce.onrender.com/product/client/auth/login",
         data
       );
 
       dispatch({
-        type: 'USER_LOGIN',
+        type: "USER_LOGIN",
         payload: {
           user: response.data.data.user,
-          accessToken: response.data.data.accessToken
-        }
+          accessToken: response.data.data.accessToken,
+        },
       });
 
       Cookies.set(
-        'userInfo',
+        "userInfo",
         JSON.stringify({
           user: response.data.data.user,
-          accessToken: response.data.data.accessToken
+          accessToken: response.data.data.accessToken,
         }),
         { expires: 7 }
       );
       setIsLoading(true);
-      enqueueSnackbar('Login successful!', { variant: 'success' });
-      router.push('/');
+      enqueueSnackbar("Login successful!", { variant: "success" });
+      router.push("/");
     } catch (error) {
       setIsLoading(false);
-      enqueueSnackbar('Email or password is incorrect', {
-        variant: 'error'
+      enqueueSnackbar("Email or password is incorrect", {
+        variant: "error",
       });
     }
   };
@@ -68,7 +68,7 @@ const Login = () => {
     <Layout>
       <form
         onSubmit={handleSubmit(submitHandler)}
-        style={{ maxWidth: 800, margin: '0 auto' }}
+        style={{ maxWidth: 800, margin: "0 auto" }}
       >
         <Typography component="h1" variant="h1">
           Login
@@ -80,11 +80,11 @@ const Login = () => {
               control={control}
               defaultValue=""
               rules={{
-                required: 'Email is required',
+                required: "Email is required",
                 pattern: {
                   value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i,
-                  message: 'Email is not valid'
-                }
+                  message: "Email is not valid",
+                },
               }}
               render={({ field }) => (
                 <TextField
@@ -94,9 +94,9 @@ const Login = () => {
                   label="Email"
                   aria-label="email"
                   error={Boolean(errors.email)}
-                  helperText={errors.email?.message || ''}
+                  helperText={errors.email?.message || ""}
                   {...field}
-                  sx={{ input: { color: 'black' } }}
+                  sx={{ input: { color: "black" } }}
                 />
               )}
             />
@@ -107,11 +107,11 @@ const Login = () => {
               control={control}
               defaultValue=""
               rules={{
-                required: 'Password is required',
+                required: "Password is required",
                 minLength: {
                   value: 6,
-                  message: 'Password must be at least 6 characters long'
-                }
+                  message: "Password must be at least 6 characters long",
+                },
               }}
               render={({ field }) => (
                 <TextField
@@ -122,13 +122,13 @@ const Login = () => {
                   aria-label="password"
                   slotProps={{
                     input: {
-                      type: 'password'
-                    }
+                      type: "password",
+                    },
                   }}
                   error={Boolean(errors.password)}
-                  helperText={errors.password?.message || ''}
+                  helperText={errors.password?.message || ""}
                   {...field}
-                  sx={{ input: { color: 'black' } }}
+                  sx={{ input: { color: "black" } }}
                 />
               )}
             />
@@ -142,7 +142,7 @@ const Login = () => {
               aria-label="login"
               disabled={isLoading}
             >
-              {isLoading ? 'Loading...' : 'Login'}
+              {isLoading ? "Loading..." : "Login"}
             </Button>
           </ListItem>
           <ListItem>

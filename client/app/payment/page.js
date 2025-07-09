@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { Store } from '@/utils/Store';
-import Cookies from 'js-cookie';
-import { useRouter } from 'next/navigation';
-import React, { useContext, useEffect, useState } from 'react';
-import { useSnackbar } from 'notistack';
-import Layout from '../Components/Layout';
-import CheckoutWizard from '../Components/checkoutWizard';
+import { Store } from "@/utils/Store";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+import React, { useContext, useEffect, useState } from "react";
+import { useSnackbar } from "notistack";
+import Layout from "../Components/Layout";
+import CheckoutWizard from "../Components/checkoutWizard";
 import {
   Box,
   Button,
@@ -16,40 +16,40 @@ import {
   ListItem,
   Radio,
   RadioGroup,
-  Typography
-} from '@mui/material';
+  Typography,
+} from "@mui/material";
 
 const Payment = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const router = useRouter();
-  const [paymentMethod, setPaymentMethod] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState("");
   const { state, dispatch } = useContext(Store);
   const {
-    cart: { shippingAddress }
+    cart: { shippingAddress },
   } = state;
   useEffect(() => {
     if (!shippingAddress.address) {
-      router.push('/shipping');
+      router.push("/shipping");
     } else {
-      setPaymentMethod(Cookies.get('paymentMethod') || '');
+      setPaymentMethod(Cookies.get("paymentMethod") || "");
     }
-  }, []);
+  }, [router, shippingAddress.address]);
 
-  const submitHandler = e => {
+  const submitHandler = (e) => {
     closeSnackbar();
     e.preventDefault();
     if (!paymentMethod) {
-      enqueueSnackbar('Payment method is required', { variant: 'error' });
+      enqueueSnackbar("Payment method is required", { variant: "error" });
     } else {
-      dispatch({ type: 'SAVE_PAYMENT_METHOD', payload: paymentMethod });
-      Cookies.set('paymentMethod', paymentMethod);
-      router.push('/placeorder');
+      dispatch({ type: "SAVE_PAYMENT_METHOD", payload: paymentMethod });
+      Cookies.set("paymentMethod", paymentMethod);
+      router.push("/placeorder");
     }
   };
   return (
     <Layout>
       <CheckoutWizard activeStep={2} />
-      <Box sx={{ margin: { xs: '0', md: '0 150px' } }}>
+      <Box sx={{ margin: { xs: "0", md: "0 150px" } }}>
         <form onSubmit={submitHandler}>
           <Typography component="h1" variant="h1">
             Payment Method
@@ -61,7 +61,7 @@ const Payment = () => {
                   aria-label="Payment Method"
                   name="paymentMethod"
                   value={paymentMethod}
-                  onChange={e => setPaymentMethod(e.target.value)}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
                 >
                   <FormControlLabel
                     label="PayPal"
@@ -96,7 +96,7 @@ const Payment = () => {
                 fullWidth
                 type="button"
                 variant="contained"
-                onClick={() => router.push('/shipping')}
+                onClick={() => router.push("/shipping")}
               >
                 Back
               </Button>

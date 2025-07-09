@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { Store } from '@/utils/Store';
-import React, { useContext, useEffect, useState, useReducer } from 'react';
-import Layout from '../Components/Layout';
+import { useRouter } from "next/navigation";
+import { Store } from "@/utils/Store";
+import React, { useContext, useEffect, useState, useReducer } from "react";
+import Layout from "../Components/Layout";
 import {
   Box,
   Button,
@@ -19,23 +19,23 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
-} from '@mui/material';
-import Link from 'next/link';
+  Typography,
+} from "@mui/material";
+import Link from "next/link";
 
 const initialState = {
   loading: true,
   orders: [],
-  error: ''
+  error: "",
 };
 
 function reducer(state, action) {
   switch (action.type) {
-    case 'FETCH_REQUEST':
-      return { ...state, loading: true, error: '' };
-    case 'FETCH_SUCCESS':
-      return { ...state, loading: false, orders: action.payload, error: '' };
-    case 'FETCH_FAIL':
+    case "FETCH_REQUEST":
+      return { ...state, loading: true, error: "" };
+    case "FETCH_SUCCESS":
+      return { ...state, loading: false, orders: action.payload, error: "" };
+    case "FETCH_FAIL":
       return { ...state, loading: false, error: action.payload };
     default:
       return state;
@@ -52,65 +52,65 @@ export default function OrderHistory() {
 
   useEffect(() => {
     if (!userInfo) {
-      router.push('/login');
+      router.push("/login");
     }
 
     const fetchOrder = async () => {
       try {
-        dispatch({ type: 'FETCH_REQUEST' });
+        dispatch({ type: "FETCH_REQUEST" });
 
         const response = await fetch(
           `http://localhost:4000/product/order-history`,
           {
-            method: 'GET',
+            method: "GET",
             headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${userInfo.accessToken}`
-            }
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userInfo.accessToken}`,
+            },
           }
         );
 
         const data = await response.json();
         setOrderData(data.data);
-        dispatch({ type: 'FETCH_SUCCESS', payload: data.data });
+        dispatch({ type: "FETCH_SUCCESS", payload: data.data });
       } catch (error) {
         setOrderData(null);
-        dispatch({ type: 'FETCH_FAIL', payload: error.message });
+        dispatch({ type: "FETCH_FAIL", payload: error.message });
       }
     };
     fetchOrder();
-  }, []);
+  }, [router, userInfo]);
 
   return (
     <Layout title="Order History">
-      <Box sx={{ marginLeft: { md: '80px' } }}>
+      <Box sx={{ marginLeft: { md: "80px" } }}>
         <Grid container spacing={1}>
           <Grid item md={3} xs={12}>
-            <Card sx={{ margin: '10px 0' }}>
+            <Card sx={{ margin: "10px 0" }}>
               <List>
                 <Link
                   href="/profile"
-                  style={{ textDecoration: 'none' }}
+                  style={{ textDecoration: "none" }}
                   passHref
                   legacyBehavior
                 >
                   <ListItem component="a">
                     <ListItemText
                       primary="User Profile"
-                      sx={{ color: 'yellowgreen' }}
+                      sx={{ color: "yellowgreen" }}
                     ></ListItemText>
                   </ListItem>
                 </Link>
                 <Link
                   href="/order-history"
-                  style={{ textDecoration: 'none' }}
+                  style={{ textDecoration: "none" }}
                   passHref
                   legacyBehavior
                 >
                   <ListItem selected component="a">
                     <ListItemText
                       primary="Order History"
-                      sx={{ color: 'yellowgreen' }}
+                      sx={{ color: "yellowgreen" }}
                     ></ListItemText>
                   </ListItem>
                 </Link>
@@ -119,7 +119,7 @@ export default function OrderHistory() {
           </Grid>
 
           <Grid item md={9} xs={12}>
-            <Card sx={{ margin: '10px 0' }}>
+            <Card sx={{ margin: "10px 0" }}>
               <List>
                 <ListItem>
                   <Typography component="h1" variant="h1">
@@ -146,7 +146,7 @@ export default function OrderHistory() {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {orderData.map(order => (
+                          {orderData.map((order) => (
                             <TableRow key={order._id}>
                               <TableCell>{order._id}</TableCell>
                               <TableCell>{order.createdAt}</TableCell>
@@ -154,12 +154,12 @@ export default function OrderHistory() {
                               <TableCell>
                                 {order.isPaid
                                   ? `paid at ${order.paidAt}`
-                                  : 'not paid'}
+                                  : "not paid"}
                               </TableCell>
                               <TableCell>
                                 {order.isDelivered
                                   ? `delivered at ${order.deliveredAt}`
-                                  : 'not delivered'}
+                                  : "not delivered"}
                               </TableCell>
                               <TableCell>
                                 <Link href={`/order/${order._id}`} passHref>

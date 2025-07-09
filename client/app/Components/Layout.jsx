@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React, { useContext, useMemo } from 'react';
-import Header from './header';
-import Footer from './Footer';
-import Head from 'next/head';
-import { Store } from '@/utils/Store';
-import { ThemeProvider, CssBaseline, Container } from '@mui/material';
-import getTheme from '@/utils/styles';
+import React, { useContext, useMemo } from "react";
+import Header from "./Header";
+import Footer from "./Footer";
+import Head from "next/head";
+import { Store } from "@/utils/Store";
+import { ThemeProvider, CssBaseline, Container } from "@mui/material";
+import getTheme from "@/utils/styles";
 
 export default function Layout({ title, desctiption, children }) {
   const { state, dispatch } = useContext(Store);
@@ -17,7 +17,7 @@ export default function Layout({ title, desctiption, children }) {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Head>
-        <title>{title ? `${title} - Next Amazona` : 'Next Amazona'}</title>
+        <title>{title ? `${title} - Next Amazona` : "Next Amazona"}</title>
         {desctiption && <meta name="description" content={desctiption}></meta>}
       </Head>
       <Header
@@ -26,7 +26,7 @@ export default function Layout({ title, desctiption, children }) {
         cart={cart}
         userInfo={userInfo}
       />
-      <Container sx={{ minHeight: '80vh' }}>{children}</Container>
+      <Container sx={{ minHeight: "80vh" }}>{children}</Container>
       <Footer />
     </ThemeProvider>
   );

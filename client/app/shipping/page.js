@@ -1,40 +1,38 @@
-'use client';
+"use client";
 
-import React, { useContext, useEffect, useState } from 'react';
-import Layout from '../Components/Layout';
-import { Button, List, ListItem, TextField, Typography } from '@mui/material';
-import { Controller, useForm } from 'react-hook-form';
-import Link from 'next/link';
-import axios from 'axios';
-import { Store } from '@/utils/Store';
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
-import CheckoutWizard from '../Components/checkoutWizard';
+import React, { useContext, useEffect } from "react";
+import Layout from "../Components/Layout";
+import { Button, List, ListItem, TextField, Typography } from "@mui/material";
+import { Controller, useForm } from "react-hook-form";
+import { Store } from "@/utils/Store";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import CheckoutWizard from "../Components/checkoutWizard";
 
 const Shipping = () => {
   const {
     handleSubmit,
     control,
     formState: { errors },
-    setValue
+    setValue,
   } = useForm();
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const {
     userInfo,
-    cart: { shippingAddress }
+    cart: { shippingAddress },
   } = state;
 
   useEffect(() => {
     if (!userInfo) {
-      router.push('/login?redirect=/shipping');
+      router.push("/login?redirect=/shipping");
     }
     if (shippingAddress) {
-      setValue('fullName', shippingAddress.fullName);
-      setValue('address', shippingAddress.address);
-      setValue('city', shippingAddress.city);
-      setValue('postalCode', shippingAddress.postalCode);
-      setValue('country', shippingAddress.country);
+      setValue("fullName", shippingAddress.fullName);
+      setValue("address", shippingAddress.address);
+      setValue("city", shippingAddress.city);
+      setValue("postalCode", shippingAddress.postalCode);
+      setValue("country", shippingAddress.country);
     }
   }, [userInfo, router, setValue, shippingAddress]);
 
@@ -43,22 +41,22 @@ const Shipping = () => {
     address,
     city,
     postalCode,
-    country
+    country,
   }) => {
     dispatch({
-      type: 'SAVE_SHIPPING_ADDRESS',
-      payload: { fullName, address, city, postalCode, country }
+      type: "SAVE_SHIPPING_ADDRESS",
+      payload: { fullName, address, city, postalCode, country },
     });
 
-    Cookies.set('ShippingAddress', {
+    Cookies.set("ShippingAddress", {
       fullName,
       address,
       city,
       postalCode,
-      country
+      country,
     });
 
-    router.push('/payment');
+    router.push("/payment");
   };
 
   return (
@@ -66,7 +64,7 @@ const Shipping = () => {
       <CheckoutWizard activeStep={1} />
       <form
         onSubmit={handleSubmit(submitHandler)}
-        style={{ maxWidth: 800, margin: '0 auto' }}
+        style={{ maxWidth: 800, margin: "0 auto" }}
       >
         <Typography component="h1" variant="h1">
           Shipping Address
@@ -79,7 +77,7 @@ const Shipping = () => {
               defaultValue=""
               rules={{
                 required: true,
-                minLength: 2
+                minLength: 2,
               }}
               render={({ field }) => (
                 <TextField
@@ -90,13 +88,13 @@ const Shipping = () => {
                   error={Boolean(errors.fullName)}
                   helperText={
                     errors.fullName
-                      ? errors.fullName.type === 'minLength'
-                        ? 'Full Name length is more than 1'
-                        : 'Full Name is required'
-                      : ''
+                      ? errors.fullName.type === "minLength"
+                        ? "Full Name length is more than 1"
+                        : "Full Name is required"
+                      : ""
                   }
                   {...field}
-                  sx={{ input: { color: 'black' } }}
+                  sx={{ input: { color: "black" } }}
                 />
               )}
             />
@@ -108,7 +106,7 @@ const Shipping = () => {
               defaultValue=""
               rules={{
                 required: true,
-                minLength: 2
+                minLength: 2,
               }}
               render={({ field }) => (
                 <TextField
@@ -119,10 +117,10 @@ const Shipping = () => {
                   error={Boolean(errors.address)}
                   helperText={
                     errors.address
-                      ? errors.address.type === 'minLength'
-                        ? 'Address length is more than 1'
-                        : 'Address is required'
-                      : ''
+                      ? errors.address.type === "minLength"
+                        ? "Address length is more than 1"
+                        : "Address is required"
+                      : ""
                   }
                   {...field}
                 ></TextField>
@@ -136,7 +134,7 @@ const Shipping = () => {
               defaultValue=""
               rules={{
                 required: true,
-                minLength: 2
+                minLength: 2,
               }}
               render={({ field }) => (
                 <TextField
@@ -147,10 +145,10 @@ const Shipping = () => {
                   error={Boolean(errors.city)}
                   helperText={
                     errors.city
-                      ? errors.city.type === 'minLength'
-                        ? 'City length is more than 1'
-                        : 'City is required'
-                      : ''
+                      ? errors.city.type === "minLength"
+                        ? "City length is more than 1"
+                        : "City is required"
+                      : ""
                   }
                   {...field}
                 ></TextField>
@@ -164,7 +162,7 @@ const Shipping = () => {
               defaultValue=""
               rules={{
                 required: true,
-                minLength: 2
+                minLength: 2,
               }}
               render={({ field }) => (
                 <TextField
@@ -175,10 +173,10 @@ const Shipping = () => {
                   error={Boolean(errors.postalCode)}
                   helperText={
                     errors.postalCode
-                      ? errors.postalCode.type === 'minLength'
-                        ? 'Postal Code length is more than 1'
-                        : 'Postal Code is required'
-                      : ''
+                      ? errors.postalCode.type === "minLength"
+                        ? "Postal Code length is more than 1"
+                        : "Postal Code is required"
+                      : ""
                   }
                   {...field}
                 ></TextField>
@@ -192,7 +190,7 @@ const Shipping = () => {
               defaultValue=""
               rules={{
                 required: true,
-                minLength: 2
+                minLength: 2,
               }}
               render={({ field }) => (
                 <TextField
@@ -203,10 +201,10 @@ const Shipping = () => {
                   error={Boolean(errors.country)}
                   helperText={
                     errors.country
-                      ? errors.country.type === 'minLength'
-                        ? 'Country length is more than 1'
-                        : 'Country is required'
-                      : ''
+                      ? errors.country.type === "minLength"
+                        ? "Country length is more than 1"
+                        : "Country is required"
+                      : ""
                   }
                   {...field}
                 ></TextField>
@@ -215,7 +213,7 @@ const Shipping = () => {
           </ListItem>
           <ListItem>
             <Button variant="contained" type="submit" fullWidth color="primary">
-              Continue{' '}
+              Continue{" "}
             </Button>
           </ListItem>
         </List>

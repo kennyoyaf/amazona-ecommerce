@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Layout from '@/app/Components/Layout';
-import { Store } from '@/utils/Store';
-import TransitionLink from '@/utils/TransitionLink';
+import Layout from "@/app/Components/Layout";
+import { Store } from "@/utils/Store";
+import TransitionLink from "@/utils/TransitionLink";
 import {
   Box,
   Button,
@@ -10,11 +10,11 @@ import {
   Grid,
   List,
   ListItem,
-  Typography
-} from '@mui/material';
-import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
-import React, { useContext, useEffect, useState } from 'react';
+  Typography,
+} from "@mui/material";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import React, { useContext, useEffect, useState } from "react";
 
 export default function ProductScreen() {
   const router = useRouter();
@@ -27,7 +27,7 @@ export default function ProductScreen() {
       try {
         const response = await fetch(
           `http://localhost:4000/product/get-product/${id}`,
-          { cache: 'no-store' }
+          { cache: "no-store" }
         );
 
         if (!response.ok) {
@@ -48,19 +48,19 @@ export default function ProductScreen() {
   }
 
   const addToCartHandler = () => {
-    const existItem = state.cart.cartItems.find(x => x._id === product._id);
+    const existItem = state.cart.cartItems.find((x) => x._id === product._id);
     const quantity = existItem ? existItem.quantity + 1 : 1;
     if (product.countInStock < quantity) {
-      window.alert('Sorry. Product is out of stock');
+      window.alert("Sorry. Product is out of stock");
       return;
     }
-    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity } });
-    router.push('/cart');
+    dispatch({ type: "CART_ADD_ITEM", payload: { ...product, quantity } });
+    router.push("/cart");
   };
   return (
     <Layout title={product.name} description={product.description}>
-      <Box sx={{ marginLeft: { xs: '0', md: '80px' } }}>
-        <Box sx={{ marginTop: '20px', marginBottom: '20px' }}>
+      <Box sx={{ marginLeft: { xs: "0", md: "80px" } }}>
+        <Box sx={{ marginTop: "20px", marginBottom: "20px" }}>
           <TransitionLink href="/">
             <Typography sx={{ fontWeight: 700 }} color="primary">
               Back to products
@@ -71,7 +71,7 @@ export default function ProductScreen() {
           <Grid item md={6} xs={12}>
             <Image
               src={product.image}
-              alt={product.name || 'Product Image'}
+              alt={product.name || "Product Image"}
               width={640}
               height={640}
               layout="intrinsic"
@@ -112,7 +112,7 @@ export default function ProductScreen() {
             </List>
           </Grid>
           <Grid item md={3} xs={12}>
-            <Card sx={{ marginRight: '50px' }}>
+            <Card sx={{ marginRight: "50px" }}>
               <List>
                 <ListItem>
                   <Grid container>
@@ -131,7 +131,7 @@ export default function ProductScreen() {
                     </Grid>
                     <Grid item xs={6}>
                       <Typography>
-                        {product.countInStock > 0 ? 'In stock' : 'Unavailable'}
+                        {product.countInStock > 0 ? "In stock" : "Unavailable"}
                       </Typography>
                     </Grid>
                   </Grid>

@@ -36,7 +36,7 @@ const Cart = () => {
 
   const updateCartHandler = async (item, quantity) => {
     const { data } = await axios.get(
-      `https://amazona-ecommerce.onrender.com/${item._id}`
+      `https://amazona-ecommerce.onrender.com/product/get-product/${item._id}`
     );
     if (data.countInStock < quantity) {
       window.alert("Sorry. Product is out of stock");

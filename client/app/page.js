@@ -69,7 +69,7 @@ export default function Home() {
           Products
         </Typography>
         <Grid container spacing={3}>
-          {products.map((product) => (
+          {products?.map((product) => (
             <Grid item md={4} key={product.name}>
               <Card>
                 <TransitionLink href={`/product/${product._id}`}>

@@ -36,6 +36,7 @@ export default function Home() {
         let postsData = await response.json();
         setProducts(postsData.data);
       } catch (err) {
+        console.error("Fetch error:", err);
         setProducts(null);
       }
     };

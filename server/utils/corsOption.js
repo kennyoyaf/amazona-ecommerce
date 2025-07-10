@@ -2,7 +2,7 @@
 module.exports = (req, res, next) => {
   const allowedOrigins = [
     "http://localhost:3000",
-    "https://amazona-ecommerce-rho.vercel.app/",
+    "https://amazona-ecommerce-rho.vercel.app",
   ];
   const origin = req.headers.origin;
 
